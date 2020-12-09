@@ -46,8 +46,8 @@ def train_test_split(features : np.ndarray, targets : np.ndarray, fraction : flo
     test_targets (np.ndarray) - subset of targets corresponding to test_features containing targets
     """
     # Edge cases
-    if fraction > 1.0 or fraction <= 0.0:
-        raise ValueError("Fraction must be in range (0, 1]")
+    if fraction > 1.0 or fraction < 0.0:
+        raise ValueError("Fraction must be in range [0, 1]")
     elif fraction == 1.0: # edge case where test_features = train_features
         train_features = features
         test_features = features

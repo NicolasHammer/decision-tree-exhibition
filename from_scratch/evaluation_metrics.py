@@ -63,4 +63,20 @@ def precision_and_recall(actual : np.ndarray, predictions : np.ndarray) -> (floa
 
     return precision, recall
 
-def f1_measure
+def f1_measure(actual : np.ndarray, predictions : np.ndarray) -> float:
+    """
+    Parameters
+    ----------
+    actual (np.ndarray) - actual labels\n
+    predictions (np.ndarray) - predicted labels
+
+    Output
+    ------
+    f1_measure (float) - harmonic mean of precision and recall
+    """
+    if predictions.shape[0] != actual.shape[0]:
+        raise ValueError("predictions and actual must be the same length!")
+
+    precision, recall = precision_and_recall(actual, predictions)
+
+    return float(2 * (precision * recall)/(precision + recall))

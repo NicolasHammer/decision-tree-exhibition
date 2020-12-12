@@ -1,6 +1,6 @@
 import numpy as np
 import statistics as stats
-from functools import partial
+from itertools import repeat
 
 class Tree():
     def __init__(self, value : (float or int) = None, attribute_name : str = "root",
@@ -78,37 +78,35 @@ class DecisionTree():
         """
         fit_tree = Tree()
         
-        # Base case 1 with no features
-        if len(unvisited_features) == 0:
-            fit_tree.value = stats.mode(targets)
-            return fit_tree
-        
-        # Base case 2 where all class labels are 1 or 0
-        if np.sum(targets) == targets.shape[1]:
+        # Base case 1 where all class labels are 1 or 0
+        sum_targets = np.sum(targets)
+        if sum_targets == targets.shape[1]:
             fit_tree.value = 1
             return fit_tree
-        elif np.sum(targets) == 0:
+        elif sum_targets == 0:
             fit_tree.value = 0
+            return fit_tree
+
+        # Base case 2 with no reamining unvisited features
+        if len(unvisited_features) == 0:
+            fit_tree.value = stats.mode(targets[0])
             return fit_tree
         
         # Recursive case
-        max_gain = 0
+        max_gain = None
         highest_info_index = None
         split_value = None
         ## Iterate over all unvisited features
         for feature_index in unvisited_features: 
-            ### Create partial information gain function where features, targets, and feature_index are held constant
-            info_gain_partial = partial(information_gain, features = features, targets = targets,
-             attribute_index = feature_index)
-            
             ### Map over all split values and find the one that maximizes information gain
             best_split_index, best_info_gain = max(
                 enumerate(
-                    map(info_gain_partial, features[feature_index,:]),
-                    key = (lambda x : x[1])))
+                    map(information_gain, repeat(features), repeat(targets), repeat(feature_index),
+                    features[feature_index,:])),
+                    key = (lambda x : x[1]))
             
             ### Override best values if better than max_gain
-            if best_info_gain > max_gain:
+            if max_gain == None or best_info_gain > max_gain:
                 max_gain = best_info_gain
                 highest_info_index = feature_index
                 split_value = features[feature_index, best_split_index]
@@ -121,12 +119,12 @@ class DecisionTree():
         ### choose samples (columns) where the attribute is less than the split value
         fit_tree.branches.append(self.fit_recursive(
             features = features[:, features[fit_tree.attribute_index, :] < split_value], 
-            targets = targets[features[fit_tree.attribute_index, :] < split_value],
+            targets = targets[:, features[fit_tree.attribute_index, :] < split_value],
             unvisited_features = [x for x in unvisited_features if x != highest_info_index]))
         ### choose samples (columns) where the attribute is greater than or equal to the split value
         fit_tree.branches.append(self.fit_recursive(
             features = features[:, features[fit_tree.attribute_index, :] >= split_value],
-            targets = targets[features[fit_tree.attribute_index, :] >= split_value],
+            targets = targets[:, features[fit_tree.attribute_index, :] >= split_value],
             unvisited_features = [x for x in unvisited_features if x != highest_info_index]))
 
         return fit_tree
@@ -136,10 +134,10 @@ class DecisionTree():
         Predict the values of the test data.  This function calls predict_recursive to recurse down the tree.
         """
         self._check_input(features)
-        return np.array([
+        return np.array([[
             self.predict_recursive(features, self.tree, test_example) for test_example in range(0, features.shape[1])
-        ])
-    
+        ]])
+
     def predict_recursive(self, features : np.ndarray, current_tree : Tree, test_example : int) -> int:
         """
         Recurse down the decision tree and find the value at the leaf node whose path corresponds to the
@@ -150,10 +148,27 @@ class DecisionTree():
             return current_tree.value
         else:
             current_tree = (current_tree.branches[0] 
-                if features[current_tree.attribute_index, test_example] < current_tree.split_value
+                if features[current_tree.attribute_index, test_example] < current_tree.value
                 else current_tree.branches[0])
             
             return self.predict_recursive(features, current_tree, test_example)
+    
+    def visualize(self, branch : Tree = None, level : int = 0) -> None:
+        """
+        Visualize a tree recursively.
+        """
+        # Edge case
+        if not branch:
+            branch = self.tree
+        
+        # Print tree
+        tab_level = " " * level
+        val = branch.value if branch.value is not None else 0
+        print(f"{level}: {tab_level}{branch.attribute_name} == {val}")
+
+        # Recurse down tree
+        for branch in branch.branches:
+            self.visualize(branch, level + 1)
 
 def entropy(targets : np.ndarray) -> float:
     """
@@ -180,8 +195,8 @@ def information_gain(features : np.ndarray, targets : np.ndarray, attribute_inde
     ------
     information_gain (float) - information gain when the features are split on attribute_index
     """
-    less_targets = targets[features[attribute_index, :] < split_value] 
-    more_targets = targets[features[attribute_index, :] >= split_value]
+    less_targets = targets[:, features[attribute_index, :] < split_value] 
+    more_targets = targets[:, features[attribute_index, :] >= split_value]
     less_entropy = entropy(less_targets) # H(targets | feature < split_value)
     more_entropy = entropy(more_targets) # H(targets | feature >= split_value)
 

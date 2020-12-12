@@ -21,7 +21,7 @@ def load_data(path : str) -> (np.ndarray, np.ndarray, list):
         reader = csv.reader(open(path, 'r'))
 
         # Extract headers
-        feature_names = list(next(reader)) # should be list of strings
+        feature_names = list(next(reader))[:-1] # should be list of strings
 
         # Extract features/targets
         data = np.array(list(reader)).T # array including features and targets

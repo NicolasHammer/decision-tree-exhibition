@@ -15,8 +15,8 @@ def confusion_matrix(actual : np.ndarray, predictions : np.ndarray) -> np.ndarra
         [false_negatives, true_positives]
     ]
     """
-    if predictions.shape[0] != actual.shape[0]:
-        raise ValueError("predictions and actual must be the same length!")
+    if predictions.shape != actual.shape:
+        raise ValueError("predictions and actual must be the same shape!")
 
     return np.array([
         [np.sum(np.logical_and(actual == 0, predictions == 0)), np.sum(np.logical_and(actual == 0, predictions == 1))],
@@ -34,7 +34,7 @@ def accuracy(actual : np.ndarray, predictions : np.ndarray) -> float:
     ------
     accuracy (float) - accuracy score
     """
-    if predictions.shape[0] != actual.shape[0]:
+    if predictions.shape != actual.shape:
         raise ValueError("predictions and actual must be the same length!")
     
     conf_mat = confusion_matrix(actual, predictions)
@@ -53,7 +53,7 @@ def precision_and_recall(actual : np.ndarray, predictions : np.ndarray) -> (floa
     precision (float) - precision of the model
     recall (float) - recall of the model
     """
-    if predictions.shape[0] != actual.shape[0]:
+    if predictions.shape != actual.shape:
         raise ValueError("predictions and actual must be the same length!")
 
     conf_mat = confusion_matrix(actual, predictions)
@@ -74,7 +74,7 @@ def f1_measure(actual : np.ndarray, predictions : np.ndarray) -> float:
     ------
     f1_measure (float) - harmonic mean of precision and recall
     """
-    if predictions.shape[0] != actual.shape[0]:
+    if predictions.shape != actual.shape:
         raise ValueError("predictions and actual must be the same length!")
 
     precision, recall = precision_and_recall(actual, predictions)

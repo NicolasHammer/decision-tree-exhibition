@@ -149,7 +149,7 @@ class DecisionTree():
         else:
             current_tree = (current_tree.branches[0] 
                 if features[current_tree.attribute_index, test_example] < current_tree.value
-                else current_tree.branches[0])
+                else current_tree.branches[1])
             
             return self.predict_recursive(features, current_tree, test_example)
     

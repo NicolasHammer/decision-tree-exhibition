@@ -17,16 +17,15 @@ def load_data(path : str) -> (np.ndarray, np.ndarray, list):
     targets (np.ndarray) - array of shape (1, n) containing the target values of n samples\n
     feature_names (list) - list of the names of the features
     """
-    with open(path, 'r') as file:
-        reader = csv.reader(open(path, 'r'))
+    reader = csv.reader(open(path, 'r'))
 
-        # Extract headers
-        feature_names = list(next(reader))[:-1] # should be list of strings
+    # Extract headers
+    feature_names = list(next(reader))[:-1] # should be list of strings
 
-        # Extract features/targets
-        data = np.array(list(reader)).T # array including features and targets
-        targets = data[-1,:].reshape(1, data.shape[1])
-        features = np.delete(data, -1, axis = 0)
+    # Extract features/targets
+    data = np.array(list(reader)).T # array including features and targets
+    targets = data[-1,:].reshape(1, data.shape[1])
+    features = np.delete(data, -1, axis = 0)
 
     return features.astype('float'), targets.astype('int'), feature_names # floats, ints, strings
 

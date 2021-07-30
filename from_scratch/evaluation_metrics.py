@@ -41,7 +41,7 @@ def accuracy(actual : np.ndarray, predictions : np.ndarray) -> float:
 
     return float((conf_mat[0, 0] + conf_mat[1, 1])/np.sum(conf_mat))
 
-def precision_and_recall(actual : np.ndarray, predictions : np.ndarray) -> (float, float):
+def precision_and_recall(actual : np.ndarray, predictions : np.ndarray) -> tuple:
     """
     Parameters
     ----------

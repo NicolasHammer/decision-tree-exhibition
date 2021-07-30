@@ -1,10 +1,9 @@
 # Loading packages
 import numpy as np
-import random
 import csv
 
 # Loading and Splitting Data
-def load_data(path : str) -> (np.ndarray, np.ndarray, list):
+def load_data(path : str) -> tuple:
     """
     Parameters
     ----------
@@ -29,7 +28,7 @@ def load_data(path : str) -> (np.ndarray, np.ndarray, list):
 
     return features.astype('float'), targets.astype('int'), feature_names # floats, ints, strings
 
-def train_test_split(features : np.ndarray, targets : np.ndarray, fraction : float = 0.8) -> (np.ndarray, np.ndarray, np.ndarray, np.ndarray):
+def train_test_split(features : np.ndarray, targets : np.ndarray, fraction : float = 0.8) -> tuple:
     """
     Parameters
     ----------

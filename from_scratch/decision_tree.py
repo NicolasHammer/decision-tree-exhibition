@@ -3,20 +3,20 @@ import statistics as stats
 from itertools import repeat
 
 class Tree():
-    def __init__(self, value : (float or int) = None, attribute_name : str = "root",
-     attribute_index : int = None, branches : list = None):
-     """
+    """
      A tree structure with multiple branches at eah node.  The default values correspond
      to the root node. 
 
-     Parameters / Member Variables
+     Member Variables
      -----------------------------
      value (float or int) - the data value if a leaf; otherwise, it is the split value\n
      attribute_name (str) - name of the attribute that the tree splits the data on\n
      attribute_index (float) - index of the attribute in the feature vector\n
-     branches (list) - list of Tree objects.  Since this is being used for a binary decision tree,
+     branches (list) - list of Tree objects.  Since this is being used for a binary decision tree,\
                        this should either be 2 or 0.
      """
+    def __init__(self, value : (float or int) = None, attribute_name : str = "root",
+     attribute_index : int = None, branches : list = None):
      self.value = value
      self.attribute_name = attribute_name
      self.attribute_index = attribute_index
